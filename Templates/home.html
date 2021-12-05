@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}Welcome{% endblock %}}
+
+{% block content %}
+<h1>Welcome to Blogly!</h1>
+{% if posts %}
+{% for post in posts %}
+<h2>{{post.title}}</h2>
+<p>{{post.content}}</p>
+<p>By: {{post.user.name}}</p>
+<p>Created: {{post.created_at}}</p>
+{% endfor %}
+{% endif %}
+{% endblock %}
