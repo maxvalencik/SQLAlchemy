@@ -1,11 +1,21 @@
 """Models for Blogly."""
 
+from enum import unique
 from flask_sqlalchemy import SQLAlchemy
 import datetime
 
 from sqlalchemy.orm import backref, relationship
 
 db = SQLAlchemy()
+
+
+def connect_db(app):
+    """Connect this database to provided Flask app.
+    To be call in app file
+    """
+
+    db.app = app
+    db.init_app(app)
 
 
 class User(db.Model):
@@ -40,11 +50,24 @@ class Post(db.Model):
     user = relationship("User", backref=backref(
         "post", cascade="all, delete-orphan"))
 
+    # Through relationship
+    tags = relationship("Tag", secondary="postTags", backref="posts")
 
-def connect_db(app):
-    """Connect this database to provided Flask app.
-    To be call in app file
-    """
 
-    db.app = app
-    db.init_app(app)
+class Tag(db.Model):
+    """Tag model"""
+
+    __tablename__ = "tags"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.Text, unique=True)
+
+
+class PostTag(db.Model):
+    """PostTag model"""
+
+    __tablename__ = "postTags"
+
+    post_id = db.Column(db.Integer, db.ForeignKey(
+        "posts.id"), primary_key=True)
+    tag_id = db.Column(db.Integer, db.ForeignKey("tags.id"), primary_key=True)
